@@ -38,11 +38,24 @@ int main(void)
         {
             int xdiff = ev.xbutton.x_root - start.x_root;
             int ydiff = ev.xbutton.y_root - start.y_root;
-            XMoveResizeWindow(dpy, start.subwindow,
-                attr.x + (start.button==1 ? xdiff : 0),
-                attr.y + (start.button==1 ? ydiff : 0),
-                MAX(1, attr.width + (start.button==3 ? xdiff : 0)),
-                MAX(1, attr.height + (start.button==3 ? ydiff : 0)));
+						int x, y;
+						int width = attr.width, height = attr.height;
+
+						if (start.button == 3) {
+							if (attr.width + xdiff > 0) { width = attr.width + xdiff;
+							} else if (attr.width + xdiff == 0) { width = 1;
+							} else { width = (xdiff * -1) - attr.width;
+								x = attr.x + xdiff + attr.width; }
+
+							if (attr.height + ydiff > 0) { height = attr.height + ydiff;
+							} else if (attr.height == 0) { height = 1;
+							} else { height = (ydiff * -1) - attr.height; 
+								y = attr.y + ydiff + attr.height; }
+						} else {
+							x = attr.x + xdiff;
+							y = attr.y + ydiff;
+						}
+            XMoveResizeWindow(dpy, start.subwindow, x, y, width, height);
         }
         else if(ev.type == ButtonRelease)
         {
@@ -50,4 +63,3 @@ int main(void)
         }
     }
 }
-
